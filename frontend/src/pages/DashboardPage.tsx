@@ -70,9 +70,7 @@ const DashboardPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message,
-          analysis_result: analysisResult,
-          chat_history: newMessages,
+          query: message  // Changed from 'message' to 'query' to match backend
         }),
       });
 
@@ -83,7 +81,7 @@ const DashboardPage = () => {
       const result = await response.json();
       setChatMessages([
         ...newMessages,
-        { role: "assistant", content: result.response },
+        { role: "assistant", content: result.answer }, // Changed from 'response' to 'answer'
       ]);
     } catch (error) {
       console.error("Chat error:", error);
