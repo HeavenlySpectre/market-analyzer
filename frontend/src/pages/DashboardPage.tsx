@@ -2,12 +2,25 @@ import { useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import AnalysisForm from "../components/analysis/AnalysisForm";
 import LoadingIndicator from "../components/analysis/LoadingIndicator";
+import ProductMetadataCard from "../components/analysis/ProductMetadataCard";
 import Chat from "../components/Chat";
 import ReactMarkdown from "react-markdown";
+
+interface ProductMetadata {
+  product_title?: string;
+  price?: string;
+  average_rating?: number;
+  total_reviews?: number;
+  shop_name?: string;
+  image_url?: string;
+  description?: string;
+  category?: string;
+}
 
 interface AnalysisResult {
   message: string;
   summary: string;
+  product_metadata?: ProductMetadata;
   chart_data: {
     rating_distribution: Array<{ [key: string]: number }>;
     positive_keywords: Array<{ [key: string]: any }>;
@@ -16,7 +29,6 @@ interface AnalysisResult {
 }
 
 const DashboardPage = () => {
-  const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
@@ -26,7 +38,6 @@ const DashboardPage = () => {
   >([]);
 
   const handleAnalysisSubmit = async (submittedUrl: string) => {
-    setUrl(submittedUrl);
     setIsLoading(true);
     setAnalysisResult(null);
     setChatMessages([]);
@@ -70,7 +81,8 @@ const DashboardPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          query: message  // Changed from 'message' to 'query' to match backend
+          query: message, // Changed from 'message' to 'query' to match backend
+          product_metadata: analysisResult.product_metadata, // Include product metadata
         }),
       });
 
@@ -114,6 +126,13 @@ const DashboardPage = () => {
                     {analysisResult.message}
                   </p>
                 </div>
+
+                {/* Product Metadata Card */}
+                {analysisResult.product_metadata && (
+                  <ProductMetadataCard
+                    metadata={analysisResult.product_metadata}
+                  />
+                )}
 
                 {/* Main Grid Layout */}
                 <div className="grid lg:grid-cols-3 gap-6">

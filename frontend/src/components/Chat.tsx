@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Loader2 } from "lucide-react";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -130,9 +131,53 @@ const Chat = ({ messages, onSendMessage, disabled = false }: ChatProps) => {
                   : "bg-gray-800 text-gray-200"
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                {message.content}
-              </p>
+              {message.role === "assistant" ? (
+                <div className="prose prose-invert prose-sm max-w-none">
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => (
+                        <p className="text-gray-200 mb-2 leading-relaxed text-sm">
+                          {children}
+                        </p>
+                      ),
+                      h1: ({ children }) => (
+                        <h1 className="text-white text-base font-bold mb-2">
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-white text-sm font-semibold mb-2">
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-white text-sm font-medium mb-1">
+                          {children}
+                        </h3>
+                      ),
+                      strong: ({ children }) => (
+                        <strong className="text-white font-semibold">
+                          {children}
+                        </strong>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="text-gray-200 list-disc list-inside mb-2 space-y-1">
+                          {children}
+                        </ul>
+                      ),
+                      li: ({ children }) => (
+                        <li className="text-gray-200 text-sm">{children}</li>
+                      ),
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                  {message.content}
+                </p>
+              )}
             </div>
 
             {message.role === "user" && (

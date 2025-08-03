@@ -63,26 +63,42 @@ def generate_initial_summary(reviews: list[str]) -> str:
     except Exception as e:
         return f"Gagal membuat ringkasan: {str(e)}"
 
-def query_rag(user_query: str) -> str:
+def query_rag(user_query: str, product_metadata=None) -> str:
     global vector_store
     if vector_store is None:
         return "Database ulasan belum dibuat. Lakukan analisis terlebih dahulu."
 
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-    relevant_docs = retriever.get_relevant_documents(user_query)
+    relevant_docs = retriever.invoke(user_query)  # Updated to use invoke instead of deprecated method
     context_text = "\n\n".join([doc.page_content for doc in relevant_docs])
 
-    prompt = f"""
-    Anda adalah asisten AI yang menjawab pertanyaan HANYA berdasarkan konteks ulasan produk yang diberikan. Jangan gunakan pengetahuan di luar konteks ini. Jika jawaban tidak ada di konteks, katakan 'Informasi tidak ditemukan dalam ulasan'.
+    # Add product metadata to context if available
+    product_info = ""
+    if product_metadata:
+        product_info = f"""
+Informasi Produk:
+- Nama: {product_metadata.product_title or 'Tidak tersedia'}
+- Harga: {product_metadata.price or 'Tidak tersedia'}
+- Rating: {product_metadata.average_rating or 'Tidak tersedia'}/5
+- Total Ulasan: {product_metadata.total_reviews or 'Tidak tersedia'}
+- Toko: {product_metadata.shop_name or 'Tidak tersedia'}
+- Kategori: {product_metadata.category or 'Tidak tersedia'}
+- Deskripsi: {product_metadata.description or 'Tidak tersedia'}
 
-    Konteks Ulasan:
+"""
+
+    prompt = f"""
+    Anda adalah asisten AI yang menjawab pertanyaan berdasarkan informasi produk dan ulasan pelanggan. Gunakan semua informasi yang tersedia untuk memberikan jawaban yang lengkap dan akurat.
+
+    {product_info}
+    Konteks Ulasan Pelanggan:
     ---
     {context_text}
     ---
 
     Pertanyaan Pengguna: {user_query}
 
-    Jawaban Akurat Berdasarkan Konteks:
+    Jawaban Komprehensif Berdasarkan Informasi Produk dan Ulasan:
     """
     try:
         response = gemini_model.generate_content(prompt)
