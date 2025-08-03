@@ -1,0 +1,22 @@
+# Framework & Server
+fastapi
+uvicorn[standard]
+
+# AI & Machine Learning
+google-generativeai
+langchain
+langchain-google-genai
+langchain-huggingface
+langchain-community
+sentence-transformers
+chromadb
+pandas
+scikit-learn
+
+# Web Scraping 
+selenium
+webdriver-manager
+beautifulsoup4
+
+# Utilitas & Konfigurasi
+python-dotenv
