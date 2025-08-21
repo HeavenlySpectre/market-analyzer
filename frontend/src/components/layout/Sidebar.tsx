@@ -1,12 +1,56 @@
-import { BarChart3, Zap, Users, TrendingUp } from "lucide-react";
+import { BarChart3, TrendingUp, Clock, Activity } from "lucide-react";
+import { useState, useEffect } from "react";
+
+interface SystemStats {
+  uptime_percentage: number;
+  avg_response_time: number;
+  cache_hit_rate: number;
+  api_calls: number;
+}
 
 const Sidebar = () => {
-  const stats = [
-    { label: "Analyses", value: "1,247", icon: BarChart3 },
-    { label: "Insights", value: "3,891", icon: Zap },
-    { label: "Products", value: "892", icon: Users },
-    { label: "Success Rate", value: "98.5%", icon: TrendingUp },
-  ];
+  const [stats, setStats] = useState([
+    { label: "Uptime", value: "Loading...", icon: TrendingUp },
+    { label: "Avg Response", value: "Loading...", icon: Clock },
+    { label: "Cache Hit Rate", value: "Loading...", icon: BarChart3 },
+    { label: "API Calls", value: "Loading...", icon: Activity },
+  ]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/v1/system-stats`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch stats');
+        }
+        const data: SystemStats = await response.json();
+        
+        setStats([
+          { label: "Uptime", value: `${data.uptime_percentage}%`, icon: TrendingUp },
+          { label: "Avg Response", value: `${data.avg_response_time}s`, icon: Clock },
+          { label: "Cache Hit Rate", value: `${data.cache_hit_rate}%`, icon: BarChart3 },
+          { label: "API Calls", value: data.api_calls.toString(), icon: Activity },
+        ]);
+      } catch (error) {
+        console.error('Failed to fetch system stats:', error);
+        // Keep loading state or show error state
+        setStats([
+          { label: "Uptime", value: "N/A", icon: TrendingUp },
+          { label: "Avg Response", value: "N/A", icon: Clock },
+          { label: "Cache Hit Rate", value: "N/A", icon: BarChart3 },
+          { label: "API Calls", value: "N/A", icon: Activity },
+        ]);
+      }
+    };
+
+    // Initial fetch
+    fetchStats();
+    
+    // Update every 30 seconds
+    const interval = setInterval(fetchStats, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
@@ -48,7 +92,7 @@ const Sidebar = () => {
       {/* Stats */}
       <div className="p-6 border-t border-gray-800">
         <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
-          Quick Stats
+          System Health
         </h3>
         <div className="space-y-3">
           {stats.map((stat, index) => {

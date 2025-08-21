@@ -1,6 +1,7 @@
 # main.py
 import sys
 import asyncio
+import os
 
 if sys.platform.startswith('win'):
     # Force SelectorEventLoop on Windows
@@ -9,6 +10,7 @@ if sys.platform.startswith('win'):
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .api import endpoints
+from .middleware.metrics_middleware import MetricsMiddleware
 
 app = FastAPI(
     title="Marketplace Analyzer API",
@@ -16,12 +18,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Konfigurasi CORS (Cross-Origin Resource Sharing)
-origins = [
-    "http://localhost:3000",
-    "http://localhost:5173",  # Vite default port
-    "http://localhost",
-]
+# Konfigurasi CORS (Cross-Origin Resource Sharing) - env driven
+cors_origins_env = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000")
+origins = [origin.strip() for origin in cors_origins_env.split(",")]
+
+# Add metrics middleware first (before CORS)
+app.add_middleware(MetricsMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

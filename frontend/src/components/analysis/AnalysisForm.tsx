@@ -46,8 +46,8 @@ const AnalysisForm = ({ onSubmit }: AnalysisFormProps) => {
 
   const exampleUrls = [
     "https://www.tokopedia.com/velixirparfums/velixir-adonis-eau-de-parfum-for-unisex-1730882164656997590",
-    "https://www.tokopedia.com/xiaomi-indonesia/xiaomi-redmi-note-13-8-256gb-midnight-black",
-    "https://www.tokopedia.com/unilever/dove-beauty-bar-pink-100gr-4pcs",
+    "https://www.tokopedia.com/gasolsurabaya/zotac-geforce-rtx-5070-solid-12gb-gddr7-vga-rtx5070-ddr7-blackwell-graphic-card-1731385442374486011?t_id=1755791288823&t_st=1&t_pp=homepage&t_efo=pure_goods_card&t_ef=homepage&t_sm=rec_homepage_outer_flow&t_spt=homepage",
+    "https://www.tokopedia.com/abditama-official/monitor-led-msi-g273cq-27-inch-va-curved-1500r-gaming-monitor-wqhd-170hz-1ms-hdmi-2-0-x2-dp-1-4-x1-adaptive-sync-hdr-ready-anti-flicker-and-less-blue-light-1731020162083882515",
   ];
 
   return (

@@ -1,5 +1,14 @@
-import { Package, Star, DollarSign, Tag, MessageSquare } from "lucide-react";
+import {
+  Package,
+  Star,
+  DollarSign,
+  Tag,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import Card from "../ui/Card";
+import { useState } from "react";
 
 interface ProductMetadataCardProps {
   metadata: {
@@ -13,6 +22,8 @@ interface ProductMetadataCardProps {
 }
 
 const ProductMetadataCard = ({ metadata }: ProductMetadataCardProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const getRatingColor = (rating: number) => {
     if (rating >= 4) return "text-green-400";
     if (rating >= 3) return "text-yellow-400";
@@ -47,9 +58,29 @@ const ProductMetadataCard = ({ metadata }: ProductMetadataCardProps) => {
           {metadata.title}
         </h2>
         {metadata.description && (
-          <p className="text-gray-400 text-sm line-clamp-3">
-            {metadata.description}
-          </p>
+          <div className="text-gray-400 text-sm">
+            <p className={isExpanded ? "" : "line-clamp-3"}>
+              {metadata.description}
+            </p>
+            {metadata.description.length > 200 && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-2 text-primary-400 hover:text-primary-300 text-xs flex items-center gap-1 transition-colors"
+              >
+                {isExpanded ? (
+                  <>
+                    <ChevronUp className="h-3 w-3" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-3 w-3" />
+                    Show More
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         )}
       </div>
 

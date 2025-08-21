@@ -1,4 +1,12 @@
-import { Star, ShoppingBag, User, Tag } from "lucide-react";
+import {
+  Star,
+  ShoppingBag,
+  User,
+  Tag,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import { useState } from "react";
 
 interface ProductMetadata {
   product_title?: string;
@@ -16,6 +24,8 @@ interface ProductMetadataCardProps {
 }
 
 const ProductMetadataCard = ({ metadata }: ProductMetadataCardProps) => {
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
   if (!metadata || !metadata.product_title) {
     return null;
   }
@@ -99,9 +109,31 @@ const ProductMetadataCard = ({ metadata }: ProductMetadataCardProps) => {
               <h4 className="font-medium text-gray-900 dark:text-white mb-2">
                 Description
               </h4>
-              <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
-                {metadata.description}
-              </p>
+              <div className="text-gray-600 dark:text-gray-400 text-sm">
+                <p className={isDescriptionExpanded ? "" : "line-clamp-3"}>
+                  {metadata.description}
+                </p>
+                {metadata.description.length > 200 && (
+                  <button
+                    onClick={() =>
+                      setIsDescriptionExpanded(!isDescriptionExpanded)
+                    }
+                    className="mt-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm flex items-center gap-1 transition-colors"
+                  >
+                    {isDescriptionExpanded ? (
+                      <>
+                        <ChevronUp className="h-4 w-4" />
+                        Show Less
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-4 w-4" />
+                        Show More
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>

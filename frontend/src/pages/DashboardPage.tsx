@@ -3,6 +3,7 @@ import Sidebar from "../components/layout/Sidebar";
 import AnalysisForm from "../components/analysis/AnalysisForm";
 import LoadingIndicator from "../components/analysis/LoadingIndicator";
 import ProductMetadataCard from "../components/analysis/ProductMetadataCard";
+import SellerReputationCard from "../components/analysis/SellerReputationCard";
 import Chat from "../components/Chat";
 import ReactMarkdown from "react-markdown";
 
@@ -17,10 +18,29 @@ interface ProductMetadata {
   category?: string;
 }
 
+interface SellerReputation {
+  seller_name?: string;
+  badges: string[];
+  store_rating?: number;
+  followers?: number;
+  product_count?: number;
+  chat_performance?: number;
+  on_time_shipping?: number;
+  cancellation_rate?: number;
+  join_date?: string;
+  location?: string;
+  processing_time?: string;
+  reliability_score: number;
+  components: Record<string, any>;
+  score_explanation: string;
+  notes: string[];
+}
+
 interface AnalysisResult {
   message: string;
   summary: string;
   product_metadata?: ProductMetadata;
+  seller_reputation?: SellerReputation;
   chart_data: {
     rating_distribution: Array<{ [key: string]: number }>;
     positive_keywords: Array<{ [key: string]: any }>;
@@ -43,7 +63,9 @@ const DashboardPage = () => {
     setChatMessages([]);
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/analyze", {
+      const apiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+      const response = await fetch(`${apiBaseUrl}/api/v1/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +97,9 @@ const DashboardPage = () => {
     setChatMessages(newMessages);
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/chat", {
+      const apiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+      const response = await fetch(`${apiBaseUrl}/api/v1/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,6 +155,13 @@ const DashboardPage = () => {
                 {analysisResult.product_metadata && (
                   <ProductMetadataCard
                     metadata={analysisResult.product_metadata}
+                  />
+                )}
+
+                {/* Seller Reputation Card */}
+                {analysisResult.seller_reputation && (
+                  <SellerReputationCard
+                    reputation={analysisResult.seller_reputation}
                   />
                 )}
 
@@ -257,7 +288,7 @@ const DashboardPage = () => {
                       </h3>
                       <div className="space-y-2">
                         {analysisResult.chart_data.positive_keywords
-                          .slice(0, 8)
+                          .slice(0, 5)
                           .map((keyword, index) => (
                             <div
                               key={index}
@@ -282,7 +313,7 @@ const DashboardPage = () => {
                       </h3>
                       <div className="space-y-2">
                         {analysisResult.chart_data.negative_keywords
-                          .slice(0, 8)
+                          .slice(0, 5)
                           .map((keyword, index) => (
                             <div
                               key={index}
